@@ -1,0 +1,3 @@
+clearscr:
+	fillScreen 0x00, 0x07
+	ret
