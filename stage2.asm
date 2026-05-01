@@ -195,7 +195,7 @@ std_right db 1
 shell_left db 0
 shell_right db 0
 
-sys_version db "v0.1.0", 0
+sys_version db "v0.1.0-dev_2026-05-01", 0
 sys_greeting db "Welcome to Worst/OS! Type 'wth' to see more informarion", 0
 
 panic_msg db "PANIC: ", 0

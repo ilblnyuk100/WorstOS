@@ -1,0 +1,17 @@
+v0.1.0-dev_2026-05-01:
+
+FIXED:
+	- Fixed keyboard driver (driver would broke after exiting from screensaver)
+
+ADDED:
+	(none)
+
+REMOVED:
+	(none)
+
+---END---
+
+##### ##### ####  #   # ##### ## ##
+#     #   # #   # ##### #      # #
+#  ## #   # #   # #   # ###     #
+##### ##### ####  #   # ##### ## ##

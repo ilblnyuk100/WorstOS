@@ -467,6 +467,9 @@ kbd:
 	iret			; And return
 
 .just_exit:
+	push ax
+	getFromPort al, 0x60
+	pop ax
 	eoiMaster
 	iret
 	
