@@ -4,6 +4,22 @@
 %include "include/worstlib.inc"
 %include "drivers/pic.asm"
 
+pre_init:
+	push es
+	push di
+	push ax
+
+	mov di, sys_config_buffer
+	mov ax, ds
+	mov es, ax
+
+	cmp byte [es:di], 1	; skip splash_screen
+	je init
+
+	pop ax
+	pop di
+	pop es
+
 splash_screen:
 	push ax
         mov ax, 0x0013
@@ -12,7 +28,7 @@ splash_screen:
 
 	push ax
 
-	mov ax, 28
+	mov ax, 31
 
 	playSound 50
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
@@ -155,6 +171,10 @@ start_process:
 	je space_skipper
 	cmp byte [process_num], 8
 	je wth
+        cmp byte [process_num], 9
+        je splash_config_enable
+        cmp byte [process_num], 10
+        je splash_config_disable
 	jmp .panic
 
 	.panic:
@@ -195,9 +215,8 @@ std_right db 1
 shell_left db 0
 shell_right db 0
 
-sys_version db "v0.1.0-dev_2026-05-01", 0
+sys_version db "v0.1.0-dev_2026-05-02", 0
 sys_greeting db "Welcome to Worst/OS! Type 'wth' to see more informarion", 0
-
 panic_msg db "PANIC: ", 0
 
 ascii_panic:
@@ -211,9 +230,10 @@ ascii_panic:
 	db " ### "
 	db " ### "
 
-
-
 times ((($-$$)+511)/512)*512-($-$$) db 0
+
+sys_config_buffer:
+	times 512 db 0
 
 splashframes:
 	incbin "bootsplash/splash_1.bin"

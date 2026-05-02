@@ -194,6 +194,25 @@
 	pop ax
 %endmacro
 
+%macro  copySectorFromRAM 2       ; 1st arg - Segment; 2nd arg - Offset
+        push ax
+        push dx
+        push cx
+	push ds
+	push si
+        mov dx, 0x1f0
+        mov ax, %1
+        mov ds, ax
+        mov si, %2
+        mov cx, 256
+        rep outsw        ; 256 times (0x1f0 -> [ds:si]; si+=2)
+	pop si
+	pop ds
+        pop cx
+        pop dx
+        pop ax
+%endmacro
+
 ; === SND ================================================================================================================================================================================================================
 
 %macro playSound 1	; 1st arg - frequency
@@ -336,4 +355,28 @@
 		copySectorToRAM %6, di
 		loop %%copy_to_ram
 	pop di
+%endmacro
+
+%macro loadToDisk 7 ; 1st arg - low sector; 2nd arg - mid sector; 3rd arg - high sector; 4th arg - really high sector (max. 16); 5th arg - how many sectors; 6th arg - from segment in ram; 7th arg - from offset in ram
+        push ax
+        mov al, 0b11100000
+        or al, %4
+        sendToPort 0x1f6, al
+        pop ax
+        sendToPort 0x1f2, %5
+        sendToPort 0x1f3, %1
+        sendToPort 0x1f4, %2
+        sendToPort 0x1f5, %3
+
+        waitDRDY
+        sendToPort 0x1f7, 0x30
+
+        push si
+        mov si, %7
+        mov cx, %5
+        %%copy_from_ram:
+                waitDRQ
+                copySectorFromRAM %6, si
+                loop %%copy_from_ram
+        pop si
 %endmacro

@@ -9,6 +9,21 @@ ADDED:
 REMOVED:
 	(none)
 
+---------
+
+v0.1.0-dev_2026-05-02:
+
+FIXED:
+        (none)
+
+ADDED:
+        - Macro "loadToDisk" and "copySectorFromRAM"
+	- "bootsplash_enable" and "bootsplash_disable" commands
+	- Config buffer for configurating Worst/OS (bootsplash already using it. in the future, other programs will use it too)
+
+REMOVED:
+        (none)
+
 ---END---
 
 ##### ##### ####  #   # ##### ## ##

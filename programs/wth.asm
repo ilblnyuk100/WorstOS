@@ -24,6 +24,12 @@ wth:
         scrollDown
         putChar '-', 0x0f, 3840
         print wth_reboot, 0x07, di
+        scrollDown
+        putChar '-', 0x0f, 3840
+        print wth_bootsplash_enable, 0x07, di
+        scrollDown
+        putChar '-', 0x0f, 3840
+        print wth_bootsplash_disable, 0x07, di
 	scrollDown
 	scrollDown
 	print wth_bye, 0x0f, 3840
@@ -41,4 +47,6 @@ wth_test1 db " test1 - just a command for debugging how my parser works. and it'
 wth_test2 db " test2 - another debug program", 0
 wth_clearscr db " clearscr - this command clears screen from bloat, it's useful", 0
 wth_reboot db " reboot - just reboots PC, faster than reboot by pressing a power button", 0
+wth_bootsplash_enable db " bootsplash_enable - enable splash screen on boot (default)", 0
+wth_bootsplash_disable db " bootsplash_disable - disable splash screen on boot", 0
 wth_bye db "that's it for a while", 0
