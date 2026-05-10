@@ -24,9 +24,28 @@ ADDED:
 REMOVED:
         (none)
 
+---------
+
+v0.1.0-dev_2026-05-10:
+
+FIXED:
+        - Moved 'splash.asm' to 'programs/bootsplash.asm'
+
+ADDED:
+        - Added enable/disable parser
+	- Added 'bootspash' command instead of 'bootsplash_enable' and 'bootsplash_disable'
+	- Added 'constants.inc' for general constants (e.g. OS size in sectors exclude bootsplash)
+
+REMOVED:
+        - Removed 'bootsplash_enable' and 'bootsplash_disable' commands
+
+P.S.: 
+	- Now i have my own website: https://worst-os.ru
+
 ---END---
 
-##### ##### ####  #   # ##### ## ##
-#     #   # #   # ##### #      # #
-#  ## #   # #   # #   # ###     #
-##### ##### ####  #   # ##### ## ##
+/````\  /`````\  I````\  |    |  |```/  \    /
+I       I     I  I    I  |>==<|  |       \__/
+I   "\  I     I  I    I  |    |  |==|    /  \
+\____/  \_____/  I____/  |    |  |___\  /    \
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

@@ -1,6 +1,7 @@
 [org 0x0000]
 [bits 16]
 
+%include "constants.inc"
 %include "include/worstlib.inc"
 %include "drivers/pic.asm"
 
@@ -28,7 +29,7 @@ splash_screen:
 
 	push ax
 
-	mov ax, 31
+	mov ax, OS_SIZE_IN_SECTORS
 
 	playSound 50
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
@@ -172,9 +173,7 @@ start_process:
 	cmp byte [process_num], 8
 	je wth
         cmp byte [process_num], 9
-        je splash_config_enable
-        cmp byte [process_num], 10
-        je splash_config_disable
+        je bootsplash
 	jmp .panic
 
 	.panic:
@@ -187,8 +186,8 @@ no_process:
 %include "drivers/keyboard.asm"
 %include "drivers/pit.asm"
 
-%include "splash.asm"
-
+%include "programs/enable_disable_parse.asm"
+%include "programs/bootsplash.asm"
 %include "programs/testutils.asm"
 %include "programs/parser.asm"
 %include "programs/shell.asm"
@@ -215,7 +214,7 @@ std_right db 1
 shell_left db 0
 shell_right db 0
 
-sys_version db "v0.1.0-dev_2026-05-02", 0
+sys_version db "v0.1.0-dev_2026-05-10", 0
 sys_greeting db "Welcome to Worst/OS! Type 'wth' to see more informarion", 0
 panic_msg db "PANIC: ", 0
 

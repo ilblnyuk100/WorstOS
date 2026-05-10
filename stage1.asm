@@ -1,6 +1,7 @@
 [org 0x7c00]
 [bits 16]
 
+%include "constants.inc"
 %include "include/worstlib.inc"
 
 _start:
@@ -15,7 +16,7 @@ _start:
 
 	print stage1_msg_2, 0x07, 160
 	sendToPort 0x1f6, 0b11100000
-	sendToPort 0x1f2, 31
+	sendToPort 0x1f2, OS_SIZE_IN_SECTORS
 	sendToPort 0x1f3, 1
 	sendToPort 0x1f4, 0
 	sendToPort 0x1f5, 0
@@ -27,7 +28,7 @@ _start:
 	print stage1_msg_4, 0x07, 320
 	push di
 	mov di, 0x0000
-	mov cx, 31
+	mov cx, OS_SIZE_IN_SECTORS
 	.copy_to_ram:
 		waitDRQ
 		copySectorToRAM 0x1000, di

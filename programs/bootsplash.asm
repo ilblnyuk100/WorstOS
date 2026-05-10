@@ -1,6 +1,15 @@
 [bits 16]
 
+bootsplash:
+	call enable_disable_parser
+	cmp byte [arg_endisable_id], 1
+	je splash_config_enable
+        cmp byte [arg_endisable_id], 2
+        je splash_config_disable
+	ret
+
 splash_config_disable:
+	mov byte [arg_endisable_id], 0
         push es
         push di
         push ax
@@ -8,7 +17,7 @@ splash_config_disable:
         mov ax, ds
         mov es, ax
         mov byte [es:di], 1
-        mov ax, 30
+        mov ax, OS_SIZE_IN_SECTORS - 1
         loadToDisk al, ah, 0, 0, 1, ds, sys_config_buffer
         pop ax
         pop di
@@ -17,6 +26,7 @@ splash_config_disable:
         ret
 
 splash_config_enable:
+	mov byte [arg_endisable_id], 0
         push es
         push di
         push ax
@@ -24,7 +34,7 @@ splash_config_enable:
         mov ax, ds
         mov es, ax
         mov byte [es:di], 0
-        mov ax, 30
+        mov ax, OS_SIZE_IN_SECTORS - 1
         loadToDisk al, ah, 0, 0, 1, ds, sys_config_buffer
         pop ax
         pop di

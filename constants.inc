@@ -1,0 +1,1 @@
+OS_SIZE_IN_SECTORS equ 31

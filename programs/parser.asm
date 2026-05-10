@@ -112,8 +112,7 @@ shell_cmds:
 	db "clearscr", 0, 5
 	db "reboot", 0, 6
 	db "wth", 0, 8
-	db "bootsplash_enable", 0, 9
-	db "bootsplash_disable", 0, 10
+	db "bootsplash", 0, 9
 	db 0xff
 
 start_command_offset dw 0
