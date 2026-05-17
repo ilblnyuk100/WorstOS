@@ -6,23 +6,31 @@ kbd:
 	cmp byte [screensvr_status], 1
 	je .just_exit
 
-	push ax			; Save registers
+	push ax	
 	push bx
 
-	getFromPort al, 0x60	; Scan code -> al
-
-	cmp al, 0xaa		; LShift break
+	getFromPort al, 0x60
+	
+	cmp al, 0x5b+0b10000000
+	je .break_super_key
+	cmp al, 0x5b	
+	je .super_key
+	.skip_4:
+	cmp al, 0xe0
+	je .extended_key
+	mov byte [extended_key], 0
+	cmp al, 0xaa
 	je .shift_unpressed
-	cmp al, 0xb6		; RShift break
+	cmp al, 0xb6
 	je .shift_unpressed
 	test al, 0b10000000
 	jnz .exit
 
-	cmp al, 0x2a		; LShift down
+	cmp al, 0x2a
 	je .shift_pressed
-	cmp al, 0x36		; RShift down
+	cmp al, 0x36
 	je .shift_pressed
-	cmp al, 0x3a		; CapsLock down
+	cmp al, 0x3a
 	je .caps_pressed
 
 	cmp al, 0x0e
@@ -50,6 +58,24 @@ kbd:
 
 	jmp .skip_1
 	
+	.break_super_key:
+		cmp byte [extended_key], 1
+		jnz .skip_4
+		mov byte [super_status], 0
+		mov byte [extended_key], 0
+		jmp .exit
+
+	.super_key:
+		cmp byte [extended_key], 1
+		jnz .skip_4
+		mov byte [super_status], 1
+		mov byte [extended_key], 0
+		jmp .exit
+
+	.extended_key:
+		mov byte [extended_key], 1
+		jmp .exit
+
 	.shift:
 		mov bx, shift_table
 		jmp .skip_1
@@ -63,14 +89,14 @@ kbd:
 		jmp .skip_1
 
 	 .shift_unpressed:
-                mov byte [shift_status], 0
+		mov byte [shift_status], 0
 		mov byte [capslock_shift_status], 0
-                jmp .exit
+		jmp .exit
 
 	.shift_pressed:
 		mov byte [shift_status], 1
-                cmp byte [capslock_status], 1
-                je .shift_caps_pressed
+		cmp byte [capslock_status], 1
+		je .shift_caps_pressed
 		jmp .exit
 
 	.caps_pressed:
@@ -93,20 +119,20 @@ kbd:
 		jmp .exit
 
 	.choose_backspace:
-                push ax
-                xor ax, ax
-                add al, [std_backspace]
+		push ax
+		xor ax, ax
+		add al, [std_backspace]
 		add al, [shell_backspace]
-                cmp al, 1
-                jle .backspace_skip
-                jmp .panic
-                .backspace_skip:
-                pop ax
-                cmp byte [std_backspace], 1
-                je .backspace
-                cmp byte [shell_backspace], 1
-                je .backspace_1
-                jmp .exit
+		cmp al, 1
+		jle .backspace_skip
+		jmp .panic
+		.backspace_skip:
+		pop ax
+		cmp byte [std_backspace], 1
+		je .backspace
+		cmp byte [shell_backspace], 1
+		je .backspace_1
+		jmp .exit
 
 	.backspace_1:
 		push ax
@@ -143,8 +169,8 @@ kbd:
 		sub di, 160
 		push ax
 		push es
-                mov ax, 0xb800
-                mov es, ax
+		mov ax, 0xb800
+		mov es, ax
 		jmp .backspace_check
 
 	.backspace_check:
@@ -168,7 +194,7 @@ kbd:
 		cmp al, 1
 		jle .enter_skip
 		jmp .panic
-		.enter_skip:
+	.enter_skip:
 		pop ax
 		cmp byte [std_enter], 1
 		je .enter
@@ -179,24 +205,24 @@ kbd:
 	.enter_1:
 		eoiMaster
 		scrollDown
-                mov di, [limit_di]
+		mov di, [limit_di]
 		mov byte [process_num], 2
 		call start_process
 		cmp byte [shell_parser_err], 1
 		je .enter_skip_1
 		cmp byte [shell_parser_ignore], 1
-                je .enter_skip_2
+		je .enter_skip_2
 		call start_process
-		.enter_skip_1:
+	.enter_skip_1:
 		mov byte [shell_parser_err], 0
 		scrollDown
-		.enter_skip_2:
+	.enter_skip_2:
 		mov byte [shell_parser_ignore], 0
 		mov byte [process_num], 1
 		mov di, [limit_di]
-                print shell_cmdln, 0x0f, di
-                putChar 0xff, 0x07, di
-                setCursorPos
+		print shell_cmdln, 0x0f, di
+		putChar 0xff, 0x07, di
+		setCursorPos
 		mov word [scroll_counter], 0
 		pop bx
 		pop ax
@@ -225,6 +251,7 @@ kbd:
 		cld
 		mov di, dx
 		mov cx, 80
+
 	.fill_row_null:
 		putChar	0x00, 0x07, di
 		loop .fill_row_null
@@ -240,32 +267,35 @@ kbd:
 		jmp .exit
 
 	.choose_up:
-                push ax
-                xor ax, ax
-                add al, [std_up]
-                cmp al, 1
-                jle .up_skip
-                jmp .panic
-                .up_skip:
-                pop ax
-                cmp byte [std_up], 1
-                je .up
+		push ax
+		xor ax, ax
+		add al, [shell_up]
+		add al, [std_up]
+		cmp al, 1
+		jle .up_skip
+		jmp .panic
+		.up_skip:
+		pop ax
+		cmp byte [shell_up], 1
+		je .up_1
+		cmp byte [std_up], 1
+		je .up
 		jmp .exit
 
 	.choose_left:
-                push ax
-                xor ax, ax
-                add al, [std_left]
+		push ax
+		xor ax, ax
+		add al, [std_left]
 		add al, [shell_left]
-                cmp al, 1
-                jle .left_skip
-                jmp .panic
-                .left_skip:
-                pop ax
-                cmp byte [std_left], 1
-                je .left
+		cmp al, 1
+		jle .left_skip
+		jmp .panic
+		.left_skip:
+		pop ax
+		cmp byte [std_left], 1
+		je .left
 		cmp byte [shell_left], 1
-                je .left_1
+		je .left_1
 		jmp .exit
 	
 	.left_1:
@@ -282,33 +312,36 @@ kbd:
 		setCursorPos
 		jmp .exit
 
-        .choose_down:
-                push ax
-                xor ax, ax
-                add al, [std_down]
-                cmp al, 1
-                jle .down_skip
-                jmp .panic
-                .down_skip:
-                pop ax
-                cmp byte [std_down], 1
-                je .down
+	.choose_down:
+		push ax
+		xor ax, ax
+		add al, [shell_down]
+		add al, [std_down]
+		cmp al, 1
+		jle .down_skip
+		jmp .panic
+		.down_skip:
+		pop ax
+		cmp byte [shell_down], 1
+		je .down_1
+		cmp byte [std_down], 1
+		je .down
 		jmp .exit
 
-        .choose_right:	
-                push ax
-                xor ax, ax
-                add al, [std_right]
+		.choose_right:	
+		push ax
+		xor ax, ax
+		add al, [std_right]
 		add al, [shell_right]
-                cmp al, 1
-                jle .right_skip
-                jmp .panic
-                .right_skip:
-                pop ax
-                cmp byte [std_right], 1
-                je .right
+		cmp al, 1
+		jle .right_skip
+		jmp .panic
+		.right_skip:
+		pop ax
+		cmp byte [std_right], 1
+		je .right
 		cmp byte [shell_right], 1
-                je .right_1
+		je .right_1
 		jmp .exit
 
 	.right_1:
@@ -326,6 +359,12 @@ kbd:
 		jmp .exit
 
 ; ===== UP =====
+
+	.up_1:
+		cmp byte [super_status], 1
+		jne .exit
+		mov byte [debugscreen_status], 1
+		jmp .exit
 
 	.up:
 		sub word [limit_di], 160
@@ -369,7 +408,13 @@ kbd:
 
 ; ===== DOWN =====
 	
-        .down:
+	.down_1:
+		cmp byte [super_status], 1
+		jne .exit
+		mov byte [debugscreen_status], 0
+		jmp .exit
+
+	.down:
 		add word [limit_di], 160
 		add di, 160
 		push ax
@@ -385,7 +430,7 @@ kbd:
 		cmp byte [null_flag], 1
 		je .down_up_inc
 	.down_up_skip_1:
-                mov byte [null_flag], 0
+		mov byte [null_flag], 0
 		setCursorPos
 		pop es
 		pop ax
@@ -399,21 +444,21 @@ kbd:
 	.down_up_correct:
 		cmp [limit_di], di
 		je .down_up_skip_1
-                sub di, 2
+		sub di, 2
 		mov byte [null_flag], 1
 		jmp .down_up_check
 		
 ; ===== RIGHT =====
 
-        .right:
+	.right:
 		push ax
 		push es
 		mov ax, 0xb800
 		mov es, ax
 		jmp .right_check
 
-                setCursorPos
-                jmp .exit
+		setCursorPos
+		jmp .exit
 
 	.right_check:
 		mov ax, [es:di]
@@ -444,10 +489,12 @@ kbd:
 		
 
 .skip_1:
+	cmp byte [std_base], 0
+	je .exit
 	xlat
 	test al, al
 	jz .exit
-	putChar al, 0x07, di	; Yeah, print characters :3
+	putChar al, 0x07, di
 	cmp di, 4000
 	je .scrolldown
 .skip_3:
@@ -456,15 +503,15 @@ kbd:
 
 .scrolldown:
 	scrollDown
-        sub di, 160
-        add word [scroll_counter], 160
+	sub di, 160
+	add word [scroll_counter], 160
 	jmp .skip_3
 
 .exit:
 	pop bx
-	pop ax			; backup Registers
-	eoiMaster		; EOI
-	iret			; And return
+	pop ax
+	eoiMaster
+	iret
 
 .just_exit:
 	push ax
@@ -478,6 +525,8 @@ kbd:
 
 kbd_error_msg db "keyboard driver returns error.", 0
 shift_status db 0
+super_status db 0
+extended_key db 0
 capslock_status db 0
 capslock_shift_status db 0
 limit_di dw 0
@@ -493,24 +542,21 @@ std_table:
 
 shift_table:
 	db 0, 0, "!@#$%^&*()_+", 0
-        db 0, "QWERTYUIOP{}", 0, 0
-        db "ASDFGHJKL:", '"', "~", 0, '|'
-        db "ZXCVBNM<>?", 0, 0, 0, ' ', 0
-        times 25 db 0
+	db 0, "QWERTYUIOP{}", 0, 0
+	db "ASDFGHJKL:", '"', "~", 0, '|'
+	db "ZXCVBNM<>?", 0, 0, 0, ' ', 0
+	times 25 db 0
 
 caps_table:
 	db 0, 0, "1234567890-=", 0
-        db 0, "QWERTYUIOP[]", 0, 0
-        db "ASDFGHJKL;'`", 0, '\'
-        db "ZXCVNM,./", 0, 0, 0, ' ', 0
-        times 25 db 0
+	db 0, "QWERTYUIOP[]", 0, 0
+	db "ASDFGHJKL;'`", 0, '\'
+	db "ZXCVNM,./", 0, 0, 0, ' ', 0
+	times 25 db 0
 
 caps_shift_table:
 	db 0, 0, "!@#$%^&*()_+", 0
-        db 0, "qwertyuiop{}", 0, 0
-        db "asdfghjkl:", '"', "~", 0, '|'
-        db "zxcvbnm<>?", 0, 0, 0, ' ', 0
-        times 25 db 0
-
-; 4 char tables. looks like a bloat :\
-; no, i did mistake, all of this code are bloat
+	db 0, "qwertyuiop{}", 0, 0
+	db "asdfghjkl:", '"', "~", 0, '|'
+	db "zxcvbnm<>?", 0, 0, 0, ' ', 0
+	times 25 db 0

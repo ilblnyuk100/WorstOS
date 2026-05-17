@@ -23,9 +23,9 @@ pre_init:
 
 splash_screen:
 	push ax
-        mov ax, 0x0013
-        int 0x10
-        pop ax
+	mov ax, 0x0013
+	int 0x10
+	pop ax
 
 	push ax
 
@@ -41,103 +41,103 @@ splash_screen:
 	
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
 	sleep 83
-	playSound 1000
-        add ax, 125
+	playSound 150
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
 	stopSound
 
-        add ax, 125
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
 
-        add ax, 125
-
-	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
-
-        add ax, 125
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
 
-        add ax, 125
-
-	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 913
-
-        add ax, 125
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
 
-        add ax, 125
-
-	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
-
-        add ax, 125
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 830
+	sleep 913
+
+	add ax, 125
+
+	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
+	sleep 83
+
+	add ax, 125
+
+	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
+	sleep 83
+
+	add ax, 125
+
+	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
+	sleep 830
 	
-        add ax, 125
+	add ax, 125
 
-	playSound 324	
-
-	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
-
-        add ax, 125
+	playSound 257	
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
 
-        add ax, 125
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
+
+	add ax, 125
+
+	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
+	sleep 83
 	stopSound
 
-        add ax, 125
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 42
-	playSound 288
+	sleep 42
+	playSound 324
 	sleep 41
 
-        add ax, 125
+	add ax, 125
 
-        loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
+	sleep 83
 
-        add ax, 125
+	add ax, 125
 
-        loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
+	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
 	sleep 208
 	stopSound
 	sleep 41
-	playSound 257
+	playSound 306
 	sleep 498
 	stopSound
-        sleep 166
+	sleep 166
 
-        add ax, 125
+	add ax, 125
 	
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
 
-        add ax, 125
-
-	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
-
-        add ax, 125
+	add ax, 125
 
 	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
-        sleep 83
+	sleep 83
+
+	add ax, 125
+
+	loadFromDisk al, ah, 0, 0, 125, 0xa000, 0x0000
+	sleep 83
 	
 
 	mov ax, 0x0003
@@ -148,7 +148,7 @@ splash_screen:
 
 
 init:
-	fillScreen 0x00, 0x07
+	fillAllScreen 0x00, 0x07
 	print sys_greeting, 0x0e, 3704
 	mov di, 3840
 	setCursorPos
@@ -163,7 +163,7 @@ start_process:
 	cmp byte [process_num], 3
 	je test1
 	cmp byte [process_num], 4
-        je test2
+	je test2
 	cmp byte [process_num], 5
 	je clearscr
 	cmp byte [process_num], 6
@@ -172,8 +172,10 @@ start_process:
 	je space_skipper
 	cmp byte [process_num], 8
 	je wth
-        cmp byte [process_num], 9
-        je bootsplash
+	cmp byte [process_num], 9
+	je bootsplash
+	cmp byte [process_num], 10
+	je screensaver_command
 	jmp .panic
 
 	.panic:
@@ -186,6 +188,8 @@ no_process:
 %include "drivers/keyboard.asm"
 %include "drivers/pit.asm"
 
+%include "programs/debugscreen.asm"
+%include "programs/sync_time.asm"
 %include "programs/enable_disable_parse.asm"
 %include "programs/bootsplash.asm"
 %include "programs/testutils.asm"
@@ -213,8 +217,11 @@ std_down db 1
 std_right db 1
 shell_left db 0
 shell_right db 0
+shell_down db 0
+shell_up db 0
+std_base db 1
 
-sys_version db "v0.1.0-dev_2026-05-10", 0
+sys_version db "v0.1.0", 0
 sys_greeting db "Welcome to Worst/OS! Type 'wth' to see more informarion", 0
 panic_msg db "PANIC: ", 0
 
@@ -236,23 +243,23 @@ sys_config_buffer:
 
 splashframes:
 	incbin "bootsplash/splash_1.bin"
-        incbin "bootsplash/splash_2.bin"
-        incbin "bootsplash/splash_3.bin"
-        incbin "bootsplash/splash_4.bin"
-        incbin "bootsplash/splash_5.bin"
-        incbin "bootsplash/splash_6.bin"
-        incbin "bootsplash/splash_7.bin"
-        incbin "bootsplash/splash_8.bin"
-        incbin "bootsplash/splash_9.bin"
-        incbin "bootsplash/splash_10.bin"
-        incbin "bootsplash/splash_11.bin"
-        incbin "bootsplash/splash_12.bin"
-        incbin "bootsplash/splash_13.bin"
-        incbin "bootsplash/splash_14.bin"
-        incbin "bootsplash/splash_15.bin"
-        incbin "bootsplash/splash_16.bin"
-        incbin "bootsplash/splash_17.bin"
-        incbin "bootsplash/splash_18.bin"
-        incbin "bootsplash/splash_19.bin"
+	incbin "bootsplash/splash_2.bin"
+	incbin "bootsplash/splash_3.bin"
+	incbin "bootsplash/splash_4.bin"
+	incbin "bootsplash/splash_5.bin"
+	incbin "bootsplash/splash_6.bin"
+	incbin "bootsplash/splash_7.bin"
+	incbin "bootsplash/splash_8.bin"
+	incbin "bootsplash/splash_9.bin"
+	incbin "bootsplash/splash_10.bin"
+	incbin "bootsplash/splash_11.bin"
+	incbin "bootsplash/splash_12.bin"
+	incbin "bootsplash/splash_13.bin"
+	incbin "bootsplash/splash_14.bin"
+	incbin "bootsplash/splash_15.bin"
+	incbin "bootsplash/splash_16.bin"
+	incbin "bootsplash/splash_17.bin"
+	incbin "bootsplash/splash_18.bin"
+	incbin "bootsplash/splash_19.bin"
 
 times ((($-$$)+511)/512)*512-($-$$) db 0

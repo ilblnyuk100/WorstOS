@@ -1,4 +1,5 @@
 ; WorstOS Library (made it for comfortable work)
+; P.S.: (And bloat :\ )
 
 ; === PORTS ==============================================================================================================================================================================================================
 
@@ -54,8 +55,8 @@
 	mov ax, 0xb800
 	mov es, ax
 	mov ds, ax
-	mov si, 160
-	mov di, 0
+	mov si, 320
+	mov di, 160
 	mov cx, 1920
 	rep movsw
 	mov cx, 80
@@ -75,13 +76,25 @@
 %macro fillScreen 2	; 1st arg - Character; 2nd arg - Attribute
 	push cx
 	push di
-	mov cx, 80*25
-	xor di, di
+	mov cx, 80*24
+	mov di, 160
 	%%fill:
 		putChar %1, %2, di
 		loop %%fill
 	pop di
 	pop cx
+%endmacro
+
+%macro fillAllScreen 2     ; 1st arg - Character; 2nd arg - Attribute
+        push cx
+        push di
+        mov cx, 80*25
+        xor di, di
+        %%fill:
+                putChar %1, %2, di
+                loop %%fill
+        pop di
+        pop cx
 %endmacro
 
 %macro setCursorPos 0	; di divided by two will be used as the cursor position
@@ -146,6 +159,55 @@
 %endmacro
 
 ; === ATA IDE ============================================================================================================================================================================================================
+
+
+%macro loadFromDisk 7 ; 1st arg - low sector; 2nd arg - mid sector; 3rd arg - high sector; 4th arg - really high sector (max. 16); 5th arg - how many sectors; 6th arg - to segment in ram; 7th arg - to offset in ram 
+	push ax
+	mov al, 0b11100000
+	or al, %4
+	sendToPort 0x1f6, al
+	pop ax
+	sendToPort 0x1f2, %5
+	sendToPort 0x1f3, %1
+	sendToPort 0x1f4, %2
+	sendToPort 0x1f5, %3
+
+	waitDRDY
+	sendToPort 0x1f7, 0x20
+
+	push di
+	mov di, %7
+	mov cx, %5
+	%%copy_to_ram:
+		waitDRQ
+		copySectorToRAM %6, di
+		loop %%copy_to_ram
+	pop di
+%endmacro
+
+%macro loadToDisk 7 ; 1st arg - low sector; 2nd arg - mid sector; 3rd arg - high sector; 4th arg - really high sector (max. 16); 5th arg - how many sectors; 6th arg - from segment in ram; 7th arg - from offset in ram
+        push ax
+        mov al, 0b11100000
+        or al, %4
+        sendToPort 0x1f6, al
+        pop ax
+        sendToPort 0x1f2, %5
+        sendToPort 0x1f3, %1
+        sendToPort 0x1f4, %2
+        sendToPort 0x1f5, %3
+
+        waitDRDY
+        sendToPort 0x1f7, 0x30
+
+        push si
+        mov si, %7
+        mov cx, %5
+        %%copy_from_ram:
+                waitDRQ
+                copySectorFromRAM %6, si
+                loop %%copy_from_ram
+        pop si
+%endmacro
 
 %macro waitDRDY 0
 	push ax
@@ -332,51 +394,3 @@
 %endmacro
 
 ; === END ================================================================================================================================================================================================================
-
-%macro loadFromDisk 7 ; 1st arg - low sector; 2nd arg - mid sector; 3rd arg - high sector; 4th arg - really high sector (max. 16); 5th arg - how many sectors; 6th arg - to segment in ram; 7th arg - to offset in ram 
-	push ax
-	mov al, 0b11100000
-	or al, %4
-	sendToPort 0x1f6, al
-	pop ax
-	sendToPort 0x1f2, %5
-	sendToPort 0x1f3, %1
-	sendToPort 0x1f4, %2
-	sendToPort 0x1f5, %3
-
-	waitDRDY
-	sendToPort 0x1f7, 0x20
-
-	push di
-	mov di, %7
-	mov cx, %5
-	%%copy_to_ram:
-		waitDRQ
-		copySectorToRAM %6, di
-		loop %%copy_to_ram
-	pop di
-%endmacro
-
-%macro loadToDisk 7 ; 1st arg - low sector; 2nd arg - mid sector; 3rd arg - high sector; 4th arg - really high sector (max. 16); 5th arg - how many sectors; 6th arg - from segment in ram; 7th arg - from offset in ram
-        push ax
-        mov al, 0b11100000
-        or al, %4
-        sendToPort 0x1f6, al
-        pop ax
-        sendToPort 0x1f2, %5
-        sendToPort 0x1f3, %1
-        sendToPort 0x1f4, %2
-        sendToPort 0x1f5, %3
-
-        waitDRDY
-        sendToPort 0x1f7, 0x30
-
-        push si
-        mov si, %7
-        mov cx, %5
-        %%copy_from_ram:
-                waitDRQ
-                copySectorFromRAM %6, si
-                loop %%copy_from_ram
-        pop si
-%endmacro

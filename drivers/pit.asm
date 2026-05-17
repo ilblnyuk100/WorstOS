@@ -1,8 +1,13 @@
 [bits 16]
 
 pit:
+	push si
 	mov byte [int_from_pit], 1
 	inc dword [sys_counter]
+	mov si, sys_config_buffer
+	inc si
+	cmp byte [ds:si], 1
+	je .skip_1
 	cmp dword [screensvr_target], 0
 	jne .skip
 	push ecx
@@ -11,12 +16,14 @@ pit:
 	add ecx, 1000
 	mov [screensvr_target], ecx
 	pop ecx
-	.skip:
+.skip:
 	push ecx
 	mov ecx, [screensvr_target]
 	cmp [sys_counter], ecx
 	jge .screensvr_counter_inc
 	pop ecx
+.skip_1:
+	pop si
 	eoiMaster
 	iret
 
@@ -24,13 +31,15 @@ pit:
 	pop ecx
 	inc word [screensvr_counter]
 	mov dword [screensvr_target], 0
-	cmp word [screensvr_counter], 60
+	cmp word [screensvr_counter], 120
 	je .screensvr_enable
+	pop si
 	eoiMaster
 	iret
 
 .screensvr_enable:
 	mov byte [screensvr_status], 1
+	pop si
 	eoiMaster
 	iret
 

@@ -85,12 +85,12 @@ shell_parser:
 	ret
 
 .ignore:
-        pop si
-        pop es
-        pop ax
-        pop di
-        mov byte [shell_parser_ignore], 1
-        ret
+		pop si
+		pop es
+		pop ax
+		pop di
+		mov byte [shell_parser_ignore], 1
+		ret
 
 .checking_space:
 	cmp al, 0x20
@@ -113,6 +113,7 @@ shell_cmds:
 	db "reboot", 0, 6
 	db "wth", 0, 8
 	db "bootsplash", 0, 9
+	db "screensaver", 0, 10
 	db 0xff
 
 start_command_offset dw 0

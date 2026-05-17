@@ -35,7 +35,7 @@ pic_init:
 	mov word [es:di+2], 0x1000
 	mov di, 0x20*4
 	mov word [es:di], pit
-        mov word [es:di+2], 0x1000
+	mov word [es:di+2], 0x1000
 	pop di
 	pop es
 	pop ax

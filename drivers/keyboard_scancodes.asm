@@ -32,12 +32,12 @@ kbd:
 .numl:
 	add al, 0x30
 	putChar al, 0x07, 2
-        jmp .end
+	jmp .end
 
 .letterl:
-        add al, 0x41-10
-        putChar al, 0x07, 2
-        jmp .end
+	add al, 0x41-10
+	putChar al, 0x07, 2
+	jmp .end
 
 .end:
 	pop ax

@@ -1,3 +1,11 @@
-process 0: NULL
-process 1: WorstOS Shell
-process 2: WorstOS Shell Command Parser
+process 00: Plain Text
+process 01: WorstOS Shell
+process 02: WorstOS Shell Command Parser
+process 03: Test command 1
+process 04: Test command 2
+process 05: Clear Screen
+process 06: Reboot a PC
+process 07: Skip space (For parsers and subparsers)
+process 08: WTH (What The Hell)
+process 09: Enable/Disable graphic splash screen on boot
+process 10: Enable/Disable screen saver

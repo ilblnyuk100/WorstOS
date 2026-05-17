@@ -5,11 +5,11 @@
 %include "include/worstlib.inc"
 
 _start:
-	cli		; In Stage1 interrupts doesnt work!
+	cli
 	xor ax, ax
 	mov es, ax
 	mov ds, ax
-	
+
 	print stage1_msg_1, 0x07, 0
 	initStack 0, 0x7c00
 	print stage1_success_msg, 0x08, di

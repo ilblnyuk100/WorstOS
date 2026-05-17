@@ -42,6 +42,27 @@ REMOVED:
 P.S.: 
 	- Now i have my own website: https://worst-os.ru
 
+---------
+
+(RELEASE 2026.05.17) v0.1.0:
+
+FIXED:
+        - Made the code more clear
+	- Added to 'documentation/processes.txt' list of processes
+
+ADDED:
+        - Added topbar
+	- Added system dump (Super + UP/DOWN)
+	- Updated bootsplash screen (edited color and sound)
+	- Added 'screensaver' command (without number value argument yet :( )
+	- Updated shell prompt
+	- Added displaying date and time (in UTC yet)
+
+REMOVED:
+        (none)
+
+P.S.: I think it's the big update, so i will release v0.1.0
+
 ---END---
 
 /````\  /`````\  I````\  |    |  |```/  \    /

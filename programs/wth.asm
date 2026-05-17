@@ -7,36 +7,41 @@ wth:
 	print wth_msg, 0x07, 3840
 	scrollDown
 	print wth_msg_2, 0x07, 3840
-        scrollDown
-        print wth_msg_3, 0x07, 3840
-        scrollDown
-        print wth_msg_4, 0x07, 3840 
+	scrollDown
+	print wth_msg_3, 0x07, 3840
+	scrollDown
+	print wth_msg_4, 0x07, 3840 
 	scrollDown
 	scrollDown
 	putChar '-', 0x0f, 3840
 	print wth_test1, 0x07, di
-        scrollDown
-        putChar '-', 0x0f, 3840
-        print wth_test2, 0x07, di
-        scrollDown
-        putChar '-', 0x0f, 3840
-        print wth_clearscr, 0x07, di
-        scrollDown
-        putChar '-', 0x0f, 3840
-        print wth_reboot, 0x07, di
-        scrollDown
-        putChar '-', 0x0f, 3840
-        print wth_bootsplash, 0x07, di
+	scrollDown
+	putChar '-', 0x0f, 3840
+	print wth_test2, 0x07, di
+	scrollDown
+	putChar '-', 0x0f, 3840
+	print wth_clearscr, 0x07, di
+	scrollDown
+	putChar '-', 0x0f, 3840
+	print wth_reboot, 0x07, di
+	scrollDown
+	putChar '-', 0x0f, 3840
+	print wth_bootsplash, 0x07, di
 	scrollDown
 	print wth_bootsplash_help, 0x08, 3840
 	scrollDown
+	putChar '-', 0x0f, 3840
+	print wth_screensaver, 0x07, di
+	scrollDown
+	print wth_screensaver_help, 0x08, 3840
+	scrollDown
+	scrollDown
+	print wth_sysdump, 0x07, 3840
 	scrollDown
 	print wth_website, 0x09, 3840
 	scrollDown
 	print wth_github, 0x09, 3840
 	ret
-	
-	
 
 wth_greeting db "Welcome to Worst/OS!! ", 0
 wth_msg db "This OS has been created by GodHex (Balanyuk Ilya) just for fun", 0
@@ -50,6 +55,8 @@ wth_clearscr db " clearscr - this command clears screen from bloat, it's useful"
 wth_reboot db " reboot - just reboots PC, faster than reboot by pressing a power button", 0
 wth_bootsplash db " bootsplash - enable or disable splash screen on boot (default enable)", 0
 wth_bootsplash_help db "  Usage: bootsplash [enable/disable]", 0
-wth_bye db "that's it for a while", 0
-wth_website db "My website: 'https://worst-os.ru'", 0
-wth_github db "My github repository: 'https://github.com/ilblnyuk100/WorstOS'", 0
+wth_screensaver db " screensaver - enable or disable screen saver (default enable)", 0
+wth_screensaver_help db "  Usage: screensaver [enable/disable]", 0
+wth_sysdump db "To open/close system dump, press 'Super+UP/DOWN'", 0
+wth_website db "My website: 'https://worst-os.ru/'", 0
+wth_github db "My github repository: 'https://github.com/ilblnyuk100/WorstOS/'", 0

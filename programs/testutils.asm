@@ -46,8 +46,8 @@ test1:
 	je .skip_1
 
 	scrollDown
-        sub word [end_command_offset], 160
-        sub word [start_command_offset], 160
+	sub word [end_command_offset], 160
+	sub word [start_command_offset], 160
 	mov di, 3840
 	print test1_msg_2, 0x07, di
 	mov byte [test1_done], 1
@@ -67,7 +67,7 @@ test1:
 	mov es, ax
 	mov ax, [es:di]
 	cmp al, 'z'
-	je .zov
+	je .arg
 	jmp .error_subparser
 
 .exit:
@@ -75,7 +75,7 @@ test1:
 	mov byte [ignore_subparser], 0
 	ret
 
-.zov:
+.arg:
 	add di, 2
 	call space_skipper
 	mov ax, [es:di]
@@ -87,10 +87,10 @@ test1:
 	jmp .exit
 
 .error_subparser:
-        scrollDown
-        mov di, 3840
-        print test1_err_msg, 0x0c, di
-        jmp .exit
+	scrollDown
+	mov di, 3840
+	print test1_err_msg, 0x0c, di
+	jmp .exit
 
 test2:
 	print test2_msg, 0x07, di
@@ -99,7 +99,7 @@ test2:
 test1_msg db "Yeah.. It's the test 1. Your worst parser works", 0
 test1_msg_1 db "Command Starts at: ", 0
 test1_msg_2 db "Command End at: ", 0
-test1_msg_3 db "ZOV ZOV ZOV RUSSIA, CBO", 0
+test1_msg_3 db "Argument 'z'", 0
 test1_err_msg db "Unknown argument", 0
 test1_done db 0
 test2_msg db "And it's the test 2. Your parser works ", 0x02, 0
